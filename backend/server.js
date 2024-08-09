@@ -1,19 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const cors = require('cors');
 const DatabasePostgres = require('./postgres.js'); // Importa a classe corretamente
 const app = express();
 
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 const database = new DatabasePostgres();
-
-app.get('/', (req, res) => {
-    console.log('Home page')
-    res.redirect('/');
-});
 
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
@@ -26,7 +23,7 @@ app.post('/login', async (req, res) => {
         const isMatch = await database.verifyPassword(email, password);
 
         if (isMatch) {
-            res.status(200).send('Login bem-sucedido!');
+            console.log('login efetuado com sucesso')
         } else {
             res.status(401).send('Email ou senha incorretos.');
         }
@@ -35,7 +32,6 @@ app.post('/login', async (req, res) => {
         res.status(500).send('Erro no servidor.');
     }
 });
-
 
 app.post('/register', async (req, res) => {
     const { email, password } = req.body;
