@@ -23,7 +23,7 @@ app.post('/login', async (req, res) => {
         const isMatch = await database.verifyPassword(email, password);
 
         if (isMatch) {
-            console.log('login efetuado com sucesso')
+            res.status(200).json({ success: true, redirectUrl: '/dashboard.html' });
         } else {
             res.status(401).send('Email ou senha incorretos.');
         }
