@@ -61,7 +61,13 @@ const Register: React.FC = () => {
                 label="Senha"
                 type="password"
                 placeholder="Digite sua senha"
-                rules={{ required: 'O campo senha é obrigatório' }}
+                rules={{
+                  required: 'O campo senha é obrigatório',
+                  pattern: {
+                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                    message: 'A senha deve ter pelo menos 8 caracteres, incluindo maiúsculas, minúsculas, números e caracteres especiais.',
+                  },
+                }}
             />
             <FormInput
                 name="confirmPassword"
@@ -70,8 +76,8 @@ const Register: React.FC = () => {
                 type="password"
                 placeholder="Confirme sua senha"
                 rules={{
-                required: 'Confirme sua senha',
-                validate: (value: string) =>
+                  required: 'Confirme sua senha',
+                  validate: (value: string) =>
                     value === getValues('password') || 'As senhas digitadas não coincidem',
                 }}
             />
