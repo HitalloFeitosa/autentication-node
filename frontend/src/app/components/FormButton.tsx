@@ -1,5 +1,6 @@
-import React from 'react';
+'use client'
 
+import React from 'react';
 interface ButtonProps {
   type?: 'button' | 'submit' | 'reset';
   className?: string;

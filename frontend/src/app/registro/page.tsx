@@ -59,7 +59,7 @@ const Register: React.FC = () => {
                 type="email"
                 placeholder="Digite seu email"
                 rules={{
-                required: 'Email is required',
+                required: 'O campo email é obrigatório',
                 pattern: {
                     value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
                     message: 'Email inválido',

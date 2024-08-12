@@ -5,6 +5,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import FormLink from '../components/FormLink';
+import { useRouter } from 'next/navigation'
 
 interface FormValues {
   email: string;
@@ -13,6 +14,7 @@ interface FormValues {
 
 const Register: React.FC = () => {
   const { handleSubmit, control, getValues, setError } = useForm<FormValues>();
+  const router = useRouter()
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
@@ -29,8 +31,9 @@ const Register: React.FC = () => {
       }
 
       const result = await response.text();
-      console.log('Success:', result);
+      console.log('Success:', result);    
 
+      router.push('/')
     } catch (error) {
       console.error('Error:', error);
 
@@ -50,7 +53,7 @@ const Register: React.FC = () => {
                 type="email"
                 placeholder="Digite seu email"
                 rules={{
-                required: 'Email is required',
+                required: 'O campo email é obrigatório',
                 pattern: {
                     value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
                     message: 'Email inválido',
