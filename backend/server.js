@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
-const DatabasePostgres = require('./postgres.js'); // Importa a classe corretamente
+const DatabasePostgres = require('./postgres.js');
 const app = express();
 
 app.use(express.static(path.join(__dirname, '../frontend')));
@@ -34,14 +34,15 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-    const { email, password } = req.body;
+    const { name, email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).send('Email e senha são obrigatórios.');
+    if (!name || !email || !password) {
+        return res.status(400).send('Nome, email e senha são obrigatórios.');
     }
 
     try {
         await database.create({
+            name: name,
             email: email,
             password: password
         });

@@ -5,12 +5,12 @@ const { sql } = require('./db');
 class DatabasePostgres {
     async create(user) {
         const userId = randomUUID();
-        const { email, password } = user;
+        const { name, email, password } = user;
 
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        await sql`INSERT INTO users (id, email, password) VALUES (${userId}, ${email}, ${hashedPassword})`;
+        await sql`INSERT INTO users (id, name, email, password) VALUES (${userId}, ${name}, ${email}, ${hashedPassword})`;
     }
 
     async verifyPassword(email, password) {
