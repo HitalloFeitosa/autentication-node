@@ -7,10 +7,8 @@ import FormButton from '../components/FormButton';
 import FormLink from '../components/FormLink';
 
 interface FormValues {
-  name: string;
   email: string;
   password: string;
-  confirmPassword: string;
 }
 
 const Register: React.FC = () => {
@@ -18,7 +16,7 @@ const Register: React.FC = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      const response = await fetch('http://localhost:3000/register', {
+      const response = await fetch('http://localhost:3000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,16 +40,9 @@ const Register: React.FC = () => {
 
   return (
     <div className='sm:w-full py-8 px-4 md:flex flex-col items-center'>
-        <h1 className='text-2xl text-center font-bold'>Cria conta</h1>
+        <h1 className='text-2xl text-center font-bold'>Fazer login</h1>
         <div className='sm:w-full md:w-1/3'>
             <form className='flex flex-col' onSubmit={handleSubmit(onSubmit)}>
-            <FormInput
-                name="name"
-                control={control}
-                label="Nome"
-                placeholder="Digite seu nome"
-                rules={{ required: 'O campo nome é obrigatório' }}
-            />
             <FormInput
                 name="email"
                 control={control}
@@ -74,22 +65,10 @@ const Register: React.FC = () => {
                 placeholder="Digite sua senha"
                 rules={{ required: 'O campo senha é obrigatório' }}
             />
-            <FormInput
-                name="confirmPassword"
-                control={control}
-                label="Confirmar Senha"
-                type="password"
-                placeholder="Confirme sua senha"
-                rules={{
-                required: 'Confirme sua senha',
-                validate: (value: string) =>
-                    value === getValues('password') || 'As senhas digitadas não coincidem',
-                }}
-            />
-            <FormButton type='submit'>Criar conta</FormButton>
+            <FormButton type='submit'>Entrar</FormButton>
             <FormLink
-              text="Já possui uma conta?"
-              href="/login"
+              text="Ainda não possui uma conta?"
+              href="/registro"
             />
             </form>
         </div>
