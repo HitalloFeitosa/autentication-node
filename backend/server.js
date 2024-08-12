@@ -2,15 +2,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const DatabasePostgres = require('./postgres.js');
-const app = express();
+require('dotenv').config();
 
+const app = express();
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 const database = new DatabasePostgres();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
@@ -23,7 +26,9 @@ app.post('/login', async (req, res) => {
         const isMatch = await database.verifyPassword(email, password);
 
         if (isMatch) {
-            res.status(200).json({ success: true, redirectUrl: '/dashboard.html' });
+            const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '1h' });
+
+            res.status(200).json({ success: true, token });
         } else {
             res.status(401).send('Email ou senha incorretos.');
         }
