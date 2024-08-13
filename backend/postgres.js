@@ -25,6 +25,30 @@ class DatabasePostgres {
 
         return isMatch
     }
+
+    async getUserByEmail(email) {
+        const user = await sql`SELECT * FROM users WHERE email = ${email}`;
+        return user.length > 0 ? user[0] : null;
+    }
+
+    async saveResetToken(email, token) {
+        await sql`UPDATE users SET reset_token = ${token} WHERE email = ${email}`;
+    }
+
+    async verifyResetToken(email, token) {
+        const user = await sql`SELECT reset_token FROM users WHERE email = ${email}`;
+        return user.length > 0 && user[0].reset_token === token;
+    }
+
+    async updatePassword(email, newPassword) {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+        await sql`UPDATE users SET password = ${hashedPassword} WHERE email = ${email}`;
+    }
+
+    async deleteResetToken(email) {
+        await sql`UPDATE users SET reset_token = NULL WHERE email = ${email}`;
+    }
 }
 
 module.exports = DatabasePostgres;

@@ -59,6 +59,58 @@ app.post('/register', async (req, res) => {
     }
 });
 
+app.post('/request-reset-password', async (req, res) => {
+    const { email } = req.body;
+
+    if(!email) {
+        return res.status(400).send('Email é obrigatório');
+    }
+
+    try {
+        const user = await database.getUserByEmail(email);
+        if(!user) {
+            return res.status(404).send('Usuário não cadastrado');
+        }
+
+        const resetToken = jwt.sign({ email }, JWT_SECRET, { expiresIn: '1h' });
+
+        await database.saveResetToken(email, resetToken);
+
+        console.log(`Token de reset enviado para o e-mail: ${email}, token: ${resetToken}`);
+
+        res.status(200).send('Um token foi enviado para você, por favor verifique seu e-mail.');
+    } catch (err) {
+        console.error('Erro ao solicitar reset de senha:', err);
+        res.status(500).send('Erro no servidor.');
+    }
+})
+
+app.post('/reset-password', async (req, res) => {
+    const { email, token, newPassword } = req.body;
+
+    if (!email || !token || !newPassword) {
+        return res.status(400).send('Email, token e nova senha são obrigatórios.');
+    }
+
+    try {
+        jwt.verify(token, JWT_SECRET);
+
+        const validToken = await database.verifyResetToken(email, token);
+        if (!validToken) {
+            return res.status(400).send('Token inválido ou expirado.');
+        }
+
+        await database.updatePassword(email, newPassword);
+
+        await database.deleteResetToken(email);
+
+        res.status(200).send('Senha atualizada com sucesso.');
+    } catch (err) {
+        console.error('Erro ao resetar senha:', err);
+        res.status(500).send('Erro no servidor.');
+    }
+});
+
 app.get('/users', async (req, res) => {
     try {
         const result = await sql`SELECT * FROM users`;
