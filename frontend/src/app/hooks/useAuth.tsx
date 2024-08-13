@@ -84,6 +84,26 @@ export const useAuth = () => {
     router.push('/login');
   };
 
+  const requestPasswordReset = async (email: string) => {
+    setError(null);
 
-  return { login, register, logout, error };
+    try {
+      const response = await fetch('http://localhost:3000/request-reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+          setError(err.message);
+      } else {
+          setError('An unexpected error occurred');
+      }
+    }
+  } 
+
+
+  return { login, register, logout, requestPasswordReset, error };
 };
