@@ -11,6 +11,7 @@ interface AuthData {
 export const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const register = async (data: AuthData) => {
     if (data.password !== data.confirmPassword) {
@@ -18,8 +19,11 @@ export const useAuth = () => {
       return;
     }
     setError(null);
+    setIsLoading(true);
 
     try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
       const response = await fetch('http://localhost:3000/register', {
         method: 'POST',
         headers: {
@@ -41,13 +45,18 @@ export const useAuth = () => {
       } else {
         setError('An unexpected error occurred');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const login = async (data: AuthData) => {
     setError(null);
+    setIsLoading(true);
 
     try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
       const response = await fetch('http://localhost:3000/login', {
         method: 'POST',
         headers: {
@@ -76,6 +85,8 @@ export const useAuth = () => {
       } else {
         setError('An unexpected error occurred');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -105,5 +116,5 @@ export const useAuth = () => {
   } 
 
 
-  return { login, register, logout, requestPasswordReset, error };
+  return { login, register, logout, requestPasswordReset, error, isLoading };
 };

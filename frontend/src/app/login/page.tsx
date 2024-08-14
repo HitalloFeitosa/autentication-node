@@ -15,7 +15,7 @@ interface FormValues {
 
 const Login: React.FC = () => {
   const { handleSubmit, control } = useForm<FormValues>();
-  const { login, error } = useAuth();
+  const { login, error, isLoading } = useAuth();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     await login(data);
@@ -48,7 +48,7 @@ const Login: React.FC = () => {
                 placeholder="Digite sua senha"
                 rules={{ required: 'O campo senha é obrigatório' }}
             />
-            <FormButton type='submit'>Entrar</FormButton>
+            <FormButton type='submit' isLoading={isLoading}>Entrar</FormButton>
             {error && <p className="text-red-500">{error}</p>}
             <div className='text-right mt-4'>
               <p className='text-sm text-gray-600'>
