@@ -13,6 +13,37 @@ export const useAuth = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
+  const verifyOTP = async (data: { otp: string }) => {
+    setError(null);
+    setIsLoading(true);
+  
+    try {
+      const response = await fetch('http://localhost:3000/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Invalid OTP');
+      }
+  
+      const result = await response.json();
+      console.log('OTP Verification Success:', result);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unexpected error occurred');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+
   const register = async (data: AuthData) => {
     if (data.password !== data.confirmPassword) {
       setError('Passwords do not match');
@@ -116,5 +147,5 @@ export const useAuth = () => {
   } 
 
 
-  return { login, register, logout, requestPasswordReset, error, isLoading };
+  return { login, register, logout, requestPasswordReset, error, isLoading, verifyOTP };
 };
