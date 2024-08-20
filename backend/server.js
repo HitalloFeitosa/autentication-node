@@ -4,6 +4,8 @@ const path = require('path');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const DatabasePostgres = require('./postgres.js');
+const nodemailer = require('nodemailer');
+const { sql } = require('./db');
 require('dotenv').config();
 
 const app = express();
@@ -38,6 +40,29 @@ app.post('/login', async (req, res) => {
     }
 });
 
+const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
+
+const mailOptions = {
+    from: '"Your App Name" <no-reply@yourapp.com>',
+    to: 'test@example.com',
+    subject: 'Test Email',
+    text: 'This is a test email sent using Mailtrap.',
+};
+
+transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+        return console.log(error);
+    }
+    console.log('Message sent: %s', info.messageId);
+});
+
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -46,15 +71,55 @@ app.post('/register', async (req, res) => {
     }
 
     try {
-        await database.create({
-            name: name,
-            email: email,
-            password: password
+        // Create user in the database
+        await database.create({ name, email, password });
+
+        // Generate OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // OTP valid for 15 minutes
+
+        // Save OTP and expiration time to the database
+        await sql`UPDATE users SET otp = ${otp}, otp_expires_at = ${otpExpiresAt} WHERE email = ${email}`;
+
+        // Send OTP via email
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Seu Código de Verificação',
+            text: `Seu código OTP é ${otp}. Ele expira em 15 minutos.`,
         });
 
-        res.status(201).send('Usuário criado com sucesso!');
+        res.status(201).send('Usuário criado com sucesso! Verifique seu email para o código OTP.');
     } catch (err) {
         console.error('Erro ao criar o usuário:', err);
+        res.status(500).send('Erro no servidor.');
+    }
+});
+
+app.post('/verify-otp', async (req, res) => {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+        return res.status(400).send('Email e OTP são obrigatórios.');
+    }
+
+    try {
+        const user = await database.getUserByEmail(email);
+
+        if (!user) {
+            return res.status(404).send('Usuário não encontrado.');
+        }
+
+        const { otp: savedOtp, otp_expires_at: otpExpiresAt } = user;
+
+        if (otp !== savedOtp || new Date() > new Date(otpExpiresAt)) {
+            return res.status(400).send('OTP inválido ou expirado.');
+        }
+
+        // If OTP is valid, you can proceed with activating the user or any other logic
+        res.status(200).send('OTP verificado com sucesso.');
+    } catch (err) {
+        console.error('Erro ao verificar OTP:', err);
         res.status(500).send('Erro no servidor.');
     }
 });
