@@ -25,15 +25,15 @@ const OTPVerification: React.FC<{ email: string }> = ({ email }) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <InputOTP maxLength={6}>
         <InputOTPGroup>
-          <InputOTPSlot index={0} />
-          <InputOTPSlot index={1} />
-          <InputOTPSlot index={2} />
+          <InputOTPSlot index={0} className="h-14 w-14" />
+          <InputOTPSlot index={1} className="h-14 w-14" />
+          <InputOTPSlot index={2} className="h-14 w-14" />
         </InputOTPGroup>
         <InputOTPSeparator />
         <InputOTPGroup>
-          <InputOTPSlot index={3} />
-          <InputOTPSlot index={4} />
-          <InputOTPSlot index={5} />
+          <InputOTPSlot index={3} className="h-14 w-14" />
+          <InputOTPSlot index={4} className="h-14 w-14" />
+          <InputOTPSlot index={5} className="h-14 w-14" />
         </InputOTPGroup>
       </InputOTP>
     </form>

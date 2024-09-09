@@ -101,10 +101,11 @@ const Register: React.FC = () => {
             </form>
           </>
         ) : (
-          <>
-            <h1 className='text-2xl text-center font-bold'>Digite o código recebido por email</h1>
+          <div className='flex flex-col items-center py-8 px-4'>
+            <h1 className='text-2xl pb-8 text-center font-bold'>Digite o código recebido por email</h1>
             <OTPVerification email={email} />
-          </>
+            <FormButton type='submit'>Criar Conta</FormButton>
+          </div>
         )}
       </div>
     </div>
