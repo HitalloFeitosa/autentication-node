@@ -71,17 +71,13 @@ app.post('/register', async (req, res) => {
     }
 
     try {
-        // Create user in the database
         await database.create({ name, email, password });
 
-        // Generate OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // OTP valid for 15 minutes
+        const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
-        // Save OTP and expiration time to the database
         await sql`UPDATE users SET otp = ${otp}, otp_expires_at = ${otpExpiresAt} WHERE email = ${email}`;
 
-        // Send OTP via email
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: email,

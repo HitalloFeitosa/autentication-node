@@ -12,6 +12,7 @@ export const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [showOtpField, setShowOtpField] = useState(false);
 
   const verifyOTP = async (data: { otp: string }) => {
     setError(null);
@@ -42,7 +43,6 @@ export const useAuth = () => {
       setIsLoading(false);
     }
   };
-  
 
   const register = async (data: AuthData) => {
     if (data.password !== data.confirmPassword) {
@@ -69,7 +69,8 @@ export const useAuth = () => {
 
       const result = await response.text();
       console.log('Register Success:', result);
-      router.push('/login');
+      
+      setShowOtpField(true);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -147,5 +148,5 @@ export const useAuth = () => {
   } 
 
 
-  return { login, register, logout, requestPasswordReset, error, isLoading, verifyOTP };
+  return { login, register, logout, requestPasswordReset, error, isLoading, verifyOTP, showOtpField, setShowOtpField };
 };
